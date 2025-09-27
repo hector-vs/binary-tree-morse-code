@@ -1,4 +1,4 @@
-package com.project.binarytreemorsecode.lists;
+package lists;
 
 public class HNode<H> {
     protected H element;
