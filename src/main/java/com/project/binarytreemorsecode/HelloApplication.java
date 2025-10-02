@@ -7,11 +7,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import lists.Treee;
 
 public class HelloApplication extends Application {
 
     private VBox contentBox;
     private Label resultLabel;
+    Treee t = new Treee();
 
     @Override
     public void start(Stage primaryStage) {
@@ -76,6 +78,11 @@ public class HelloApplication extends Application {
         btnEnviar.setOnAction(e -> {
             String codigo = txtCodigo.getText();
             String letra = txtLetra.getText();
+            try {
+                t.insert(letra, codigo);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             resultLabel.setText("Inserido: " + codigo + " = " + letra);
         });
 
@@ -96,7 +103,14 @@ public class HelloApplication extends Application {
 
         btnEnviar.setOnAction(e -> {
             String palavra = txtPalavra.getText();
-            resultLabel.setText(palavra + " fica igual = --.-");
+            String code = null;
+            try {
+                code = t.encode(palavra);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            resultLabel.setText(palavra + " fica igual = "+code);
+            System.out.println(code);
         });
 
         contentBox.getChildren().addAll(txtPalavra, btnEnviar);
