@@ -1,16 +1,22 @@
 package lists;
 
 public class HNode<H> {
-    protected H element;
-    protected HNode<H> right;
-    protected HNode<H> left;
+    private H element;
+    private HNode<H> right;
+    private HNode<H> left;
 
     public HNode(H element) {
         this.element = element;
     }
 
+    public HNode() {}
+
     public H getElement () {
         return this.element;
+    }
+
+    public void setElement(H element) {
+        this.element = element;
     }
 
     public HNode<H> getRight () {
