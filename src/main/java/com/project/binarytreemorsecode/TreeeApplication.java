@@ -21,20 +21,18 @@ import lists.Treee;
 import lists.HNode;
 
 public class TreeeApplication extends Application {
-    // ====== constantes visuais ======
-    private static final double NODE_R    = 16;  // raio do nó
-    private static final double LEVEL_GAP = 90;  // distância vertical entre níveis
-    private static final double MARGIN    = 40;  // margem do canvas
+    private static final double NODE_R    = 16;
+    private static final double LEVEL_GAP = 90;
+    private static final double MARGIN    = 40;
 
-    // usando fundo branco: texto/ramos pretos para boa leitura
     private static final Color BG_COLOR        = Color.WHITE;
     private static final Color EDGE_COLOR      = Color.BLACK;
-    private static final Color NODE_FILL_COLOR = Color.web("#1f2937"); // cinza escuro
+    private static final Color NODE_FILL_COLOR = Color.web("#1f2937");
     private static final Color NODE_STROKE     = Color.BLACK;
     private static final Color TEXT_COLOR      = Color.WHITE;
 
     private VBox contentBox;
-    private TextField resultLabel; // não-editável, só para mostrar mensagens
+    private TextField resultLabel;
     Treee t = new Treee();
 
     @Override
@@ -84,7 +82,6 @@ public class TreeeApplication extends Application {
         primaryStage.show();
     }
 
-    // ---------- telas ----------
     private void mostrarInserir() {
         contentBox.getChildren().clear();
 
@@ -93,7 +90,6 @@ public class TreeeApplication extends Application {
         txtCodigo.setStyle("-fx-background-color: #222; -fx-text-fill: white; " +
                 "-fx-border-color: white; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 6;");
 
-        // aceita só . e _ e limita a 6 caracteres
         TextFormatter<String> morseFormatter = new TextFormatter<>(change -> {
             String newText = change.getControlNewText();
             if (newText.matches("[._]*") && newText.length() <= 6) return change;
@@ -158,7 +154,7 @@ public class TreeeApplication extends Application {
                 "-fx-border-color: white; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 6;");
 
         txtCodigo.setTextFormatter(new TextFormatter<String>(change -> {
-            if (change.getText().matches("[._ ]*")) return change; // permite separar letras com espaço
+            if (change.getText().matches("[._ ]*")) return change;
             return null;
         }));
 
@@ -179,16 +175,14 @@ public class TreeeApplication extends Application {
         contentBox.getChildren().addAll(txtCodigo, btnEnviar);
     }
 
-    // ---------- desenho da árvore (layout em grade) ----------
     private void mostrarArvore() {
         contentBox.getChildren().clear();
 
-        int depth = getDepth(t.getRoot()); // 1 = só raiz
+        int depth = getDepth(t.getRoot());
         if (depth <= 0) depth = 1;
 
-        // Na base existem 2^(depth-1) "colunas"
         double colsBase   = Math.pow(2, Math.max(0, depth - 1));
-        double slotMin    = NODE_R * 4;                       // largura mínima por coluna
+        double slotMin    = NODE_R * 4;
         double usableWide = Math.max(colsBase * slotMin, 600 - MARGIN * 2);
 
         double width  = usableWide + MARGIN * 2;
@@ -197,21 +191,17 @@ public class TreeeApplication extends Application {
         Canvas canvas = new Canvas(width, height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        // fundo
         gc.setFill(BG_COLOR);
         gc.fillRect(0, 0, width, height);
 
-        // estilos
         gc.setLineWidth(2);
         gc.setStroke(EDGE_COLOR);
         gc.setFill(TEXT_COLOR);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
 
-        // desenha começando da raiz: nível 0, índice 0
         desenharNoGrid(gc, t.getRoot(), 0, 0, depth, width);
 
-        // Scroll + Pan + Zoom
         Group group = new Group(canvas);
         group.setCache(false);
         canvas.setCache(false);
@@ -227,7 +217,7 @@ public class TreeeApplication extends Application {
         group.setOnScroll(evt -> {
             if (!evt.isControlDown()) return;
             double delta = (evt.getDeltaY() > 0) ? 1.1 : 0.9;
-            scale[0] = clamp(scale[0] * delta, 0.5, 2.0); // zoom contido
+            scale[0] = clamp(scale[0] * delta, 0.5, 2.0);
             group.setScaleX(scale[0]);
             group.setScaleY(scale[0]);
             evt.consume();
@@ -236,26 +226,21 @@ public class TreeeApplication extends Application {
         contentBox.getChildren().add(scrollPane);
     }
 
-    /**
-     * Desenha a árvore em "grade": em cada nível L há 2^L colunas.
-     * O nó (level, index) fica no centro da coluna index.
-     */
     private void desenharNoGrid(GraphicsContext gc,
                                 HNode<String> node,
-                                int level,            // nível atual (0 = raiz)
-                                int indexAtLevel,     // índice do nó no nível [0..2^level-1]
-                                int maxDepth,         // profundidade total (níveis)
+                                int level,
+                                int indexAtLevel,
+                                int maxDepth,
                                 double totalWidth) {
         if (node == null) return;
 
         double usable = totalWidth - MARGIN * 2;
-        int cols      = 1 << level; // 2^level
+        int cols      = 1 << level;
         double slotW  = usable / cols;
 
         double x = MARGIN + slotW * (indexAtLevel + 0.5);
         double y = MARGIN + NODE_R + level * LEVEL_GAP;
 
-        // linhas até os filhos (calculando a posição do filho com antecedência)
         int childLevel = level + 1;
         if (childLevel < maxDepth) {
             int childCols  = 1 << childLevel;
@@ -279,21 +264,18 @@ public class TreeeApplication extends Application {
             }
         }
 
-        // nó (círculo)
         gc.setFill(NODE_FILL_COLOR);
         gc.fillOval(x - NODE_R, y - NODE_R, NODE_R * 2, NODE_R * 2);
 
         gc.setStroke(NODE_STROKE);
         gc.strokeOval(x - NODE_R, y - NODE_R, NODE_R * 2, NODE_R * 2);
 
-        // rótulo
         if (node.getElement() != null) {
             gc.setFill(TEXT_COLOR);
             gc.fillText(node.getElement(), x, y);
         }
     }
 
-    // ---------- helpers ----------
     private int getDepth(HNode<String> node) {
         if (node == null) return 0;
         return 1 + Math.max(getDepth(node.getLeft()), getDepth(node.getRight()));
