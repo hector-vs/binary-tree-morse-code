@@ -150,6 +150,10 @@ public class Treee {
         this.root = null;
     }
 
+    public HNode<String> getRoot() {
+        return root;
+    }
+
     private boolean isEmpty() {
         return this.root == null;
     }
