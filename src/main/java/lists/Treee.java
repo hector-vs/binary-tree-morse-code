@@ -140,7 +140,10 @@ public class Treee {
         String resultText = "";
 
         for(String code: codes) {
-            resultText += decode(code, this.root);
+            String decoded = decode(code, this.root);
+            if(decoded != null) {
+                resultText += text;
+            }
         }
 
         return resultText;
