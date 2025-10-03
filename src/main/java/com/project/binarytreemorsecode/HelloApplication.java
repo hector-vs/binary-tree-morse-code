@@ -130,7 +130,13 @@ public class HelloApplication extends Application {
 
         btnEnviar.setOnAction(e -> {
             String codigo = txtCodigo.getText();
-            resultLabel.setText(codigo + " fica igual = ROCHA");
+            String resultText = null;
+            try {
+                resultText = t.decode(codigo);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            resultLabel.setText(codigo + " fica igual = " + resultText);
         });
 
         contentBox.getChildren().addAll(txtCodigo, btnEnviar);

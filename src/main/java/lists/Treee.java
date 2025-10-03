@@ -1,7 +1,5 @@
 package lists;
 
-import java.util.Objects;
-
 public class Treee {
     HNode<String> root;
 
@@ -46,7 +44,7 @@ public class Treee {
 
     public void insert(String letter, String code) throws Exception {
         if (this.isEmpty()) {
-            this.root = new HNode<String>(null);
+            this.root = new HNode<>(null);
         }
 
         this.erase(letter);
@@ -99,6 +97,53 @@ public class Treee {
         }
 
         return finalCode;
+    }
+
+    public String decode(String code, HNode<String> node) throws Exception {
+        if(node == null) return "";
+        char firstCode = code.charAt(0);
+        String restCode = code.length() > 1 ? code.substring(1) : "";
+
+        if(firstCode == ' ') {
+            return " ";
+        }
+
+        if (firstCode != left && firstCode != right) {
+            throw new Exception("Invalid code");
+        }
+
+        if (firstCode == right) {
+            if (node.getRight() == null) return "";
+
+            if (restCode.isEmpty()) {
+                return node.getRight().getElement();
+            } else {
+                return decode(restCode, node.getRight());
+            }
+        } else {
+            if (node.getLeft() == null) return "";
+
+            if (restCode.isEmpty()) {
+                return node.getLeft().getElement();
+            } else {
+                return decode(restCode, node.getLeft());
+            }
+        }
+    }
+
+    public String decode(String text) throws Exception {
+        if (this.isEmpty()) {
+            return "";
+        }
+
+        String[] codes = text.split(" ");
+        String resultText = "";
+
+        for(String code: codes) {
+            resultText += decode(code, this.root);
+        }
+
+        return resultText;
     }
 
     public void clear() {
