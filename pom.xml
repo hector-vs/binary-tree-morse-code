@@ -61,7 +61,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.project.binarytreemorsecode/com.project.binarytreemorsecode.HelloApplication
+                                com.project.binarytreemorsecode/com.project.binarytreemorsecode.TreeeApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

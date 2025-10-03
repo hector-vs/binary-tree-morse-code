@@ -12,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -21,16 +20,14 @@ import javafx.stage.Stage;
 import lists.Treee;
 import lists.HNode;
 
-public class HelloApplication extends Application {
-
-    // ====== constantes visuais ======
-    private static final double NODE_R = 16;        // raio do nó
-    private static final double LEVEL_GAP = 90;     // distância vertical entre níveis
-    private static final double MARGIN = 40;        // margem do canvas
+public class TreeeApplication extends Application {
+    private static final double NODE_R = 16;
+    private static final double LEVEL_GAP = 90;
+    private static final double MARGIN = 40;
 
     private static final Color BG_COLOR        = Color.BLACK;
     private static final Color EDGE_COLOR      = Color.WHITE;
-    private static final Color NODE_FILL_COLOR = Color.web("#1f2937"); // cinza escuro
+    private static final Color NODE_FILL_COLOR = Color.web("#1f2937");
     private static final Color NODE_STROKE     = Color.WHITE;
     private static final Color TEXT_COLOR      = Color.WHITE;
 
@@ -186,7 +183,6 @@ public class HelloApplication extends Application {
         int depth = getDepth(t.getRoot());
         if (depth <= 0) depth = 1;
 
-        // largura aproximada: 2^(depth-1) nós na base, cada "slot" ~ (NODE_R*4)
         double baseSlots = Math.pow(2, Math.max(0, depth - 1));
         double approxWidth = baseSlots * (NODE_R * 4);
         double width = Math.max(approxWidth + MARGIN * 2, 800);
@@ -195,25 +191,21 @@ public class HelloApplication extends Application {
         Canvas canvas = new Canvas(width, height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        // fundo preto
         gc.setFill(BG_COLOR);
         gc.fillRect(0, 0, width, height);
 
-        // estilos padrão
         gc.setLineWidth(2);
         gc.setStroke(EDGE_COLOR);
         gc.setFill(TEXT_COLOR);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
 
-        // desenha árvore centralizada
         double rootX = width / 2.0;
         double rootY = MARGIN + NODE_R;
         double initialOffset = Math.max((approxWidth / 4), 60); // espaçamento horizontal inicial
 
         desenharNo(gc, t.getRoot(), rootX, rootY, initialOffset);
 
-        // Scroll + Pan + Zoom
         Group group = new Group(canvas);
         ScrollPane scrollPane = new ScrollPane(group);
         scrollPane.setPannable(true);
@@ -221,7 +213,6 @@ public class HelloApplication extends Application {
         scrollPane.setFitToWidth(false);
         scrollPane.setFitToHeight(false);
 
-        // Zoom com Ctrl + scroll
         final double[] scale = {1.0};
         group.setOnScroll(evt -> {
             if (!evt.isControlDown()) return;
@@ -250,21 +241,18 @@ public class HelloApplication extends Application {
             desenharNo(gc, node.getRight(), x + offset, y + LEVEL_GAP, Math.max(offset / 1.6, 30));
         }
 
-        // nó (círculo)
         gc.setFill(NODE_FILL_COLOR);
         gc.fillOval(x - NODE_R, y - NODE_R, NODE_R * 2, NODE_R * 2);
 
         gc.setStroke(NODE_STROKE);
         gc.strokeOval(x - NODE_R, y - NODE_R, NODE_R * 2, NODE_R * 2);
 
-        // texto centralizado
         if (node.getElement() != null) {
             gc.setFill(TEXT_COLOR);
             gc.fillText(node.getElement(), x, y);
         }
     }
 
-    // ====== helpers ======
     private int getDepth(HNode<String> node) {
         if (node == null) return 0;
         return 1 + Math.max(getDepth(node.getLeft()), getDepth(node.getRight()));

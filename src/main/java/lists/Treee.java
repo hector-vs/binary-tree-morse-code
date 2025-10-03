@@ -93,7 +93,9 @@ public class Treee {
 
         for (char letter : letters) {
             String code = search(this.root, String.valueOf(letter), "");
-            finalCode += code + " ";
+            if(code != null) {
+                finalCode += code + " ";
+            }
         }
 
         return finalCode;
@@ -142,7 +144,7 @@ public class Treee {
         for(String code: codes) {
             String decoded = decode(code, this.root);
             if(decoded != null) {
-                resultText += text;
+                resultText += decoded;
             }
         }
 
